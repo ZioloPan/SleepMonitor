@@ -33,6 +33,12 @@ public class HeartRateService {
                         .format("HeartRate with id = {0} not found", id)));
     }
 
+    public List<HeartRateDto> getByTimestampRange(int from, int to) {
+        return heartRateRepository.findAllByTimestampBetween(from, to).stream()
+                .map(HeartRateDto::fromEntity)
+                .toList();
+    }
+
     public HeartRateDto create(CreateHeartRateCommand command) {
         HeartRate heartRate = command.toEntity();
         return HeartRateDto.fromEntity(heartRateRepository.save(heartRate));

@@ -34,6 +34,11 @@ public class HeartRateController {
         return heartRateService.getById(id);
     }
 
+    @GetMapping(params = {"from", "to"})
+    public List<HeartRateDto> getByTimestampRange(@RequestParam int from, @RequestParam int to) {
+        return heartRateService.getByTimestampRange(from, to);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public HeartRateDto create(@RequestBody @Valid CreateHeartRateCommand command) {
