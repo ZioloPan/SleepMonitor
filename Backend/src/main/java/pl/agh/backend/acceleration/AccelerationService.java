@@ -33,6 +33,12 @@ public class AccelerationService {
                         .format("Acceleration with id ={0} not found", id)));
     }
 
+    public List<AccelerationDto> getByTimestampRange(int from, int to) {
+        return accelerationRepository.findByTimestampBetween(from, to)
+                .stream()
+                .map(AccelerationDto::fromEntity)
+                .toList();
+    }
 
     public AccelerationDto create(CreateAccelerationCommand command) {
         Acceleration acceleration = command.toEntity();

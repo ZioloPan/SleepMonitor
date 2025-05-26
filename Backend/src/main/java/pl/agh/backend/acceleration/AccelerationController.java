@@ -34,6 +34,12 @@ public class AccelerationController {
         return accelerationService.getById(id);
     }
 
+    @GetMapping(params = {"from", "to"})
+    public List<AccelerationDto> getByTimestampRange(@RequestParam int from, @RequestParam int to) {
+        return accelerationService.getByTimestampRange(from, to);
+    }
+
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AccelerationDto create(@RequestBody @Valid CreateAccelerationCommand command) {
@@ -45,5 +51,4 @@ public class AccelerationController {
     public void uploadFromTxt(@RequestParam("file") MultipartFile file) {
         accelerationService.saveFromTxt(file);
     }
-
 }
