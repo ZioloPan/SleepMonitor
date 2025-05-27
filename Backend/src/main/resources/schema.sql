@@ -11,3 +11,9 @@ CREATE TABLE IF NOT EXISTS acceleration (
                                             acceleration_y DOUBLE PRECISION NOT NULL,
                                             acceleration_z DOUBLE PRECISION NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS sleep_stage (
+                                            id SERIAL PRIMARY KEY,
+                                            timestamp INTEGER NOT NULL,
+                                            stage INTEGER NOT NULL
+);
