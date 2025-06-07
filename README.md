@@ -40,4 +40,8 @@ Once the server is running, you can access the automatically generated API docum
 
 ## ML-based Sleep Analysis Module:
 
+This module classifies sleep stages (Wake, NREM, REM) using data from an accelerometer and a heart rate sensor. It performs synchronized preprocessing of raw motion and heart rate signals, extracts physiologically meaningful features (e.g., activity counts, heart rate variability, circadian rhythm), and uses a trained machine learning model to predict sleep stages on a second-by-second basis.
+
+The module is based on methods adapted from ojwalch/sleep_classifiers and supports both batch processing and single-sequence prediction. The dataset used for training and testing is from PhysioNet Sleep Accel.
+
 ## Frontend:
