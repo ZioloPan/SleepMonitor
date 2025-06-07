@@ -1,4 +1,4 @@
-from tools import *
+from ml_model.tools import *
 from joblib import load
 from keras.models import load_model
 import pandas as pd
@@ -9,7 +9,7 @@ def predict_stages(motion, heart):
     activity = build_activity_counts(motion)
     heart_rate = build_heart_rate(heart)
 
-    epochs = heart_rate["time"].tolist()
+    epochs = heart_rate["timestamp"].tolist()
     rows = []
     for epoch in [e for e in epochs if e >= 0]:
         rows.append({
@@ -29,13 +29,4 @@ def predict_stages(motion, heart):
     mapping = {0: "wake", 1: "NREM", 2: "REM"}
     df["stage"] = df["stage"].map(mapping)
     return df["stage"]
-
-
-if __name__ == '__main__':
-    motion_raw = pd.read_csv(f"raw_data/motion/759667_acceleration.txt", sep=" ", header=None,
-                             names=["time", "x", "y", "z"])
-    heart_raw = pd.read_csv(f"raw_data/heart_rate/759667_heartrate.txt", sep=",", header=None,
-                            names=["time", "heart_rate"])
-    predictions = predict_stages(motion_raw, heart_raw)
-    print(predictions.to_string())
 

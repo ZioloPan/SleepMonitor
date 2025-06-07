@@ -6,8 +6,8 @@ from scipy.signal import butter, filtfilt
 def build_activity_counts(data):
     # Interpolacja sygnału - Próbkowanie sygnału z osi Z do stałej częstotliwości fs = 50 Hz przy użyciu interpolacji (czyli równomierne próbkowanie danych, nawet jeśli dane wejściowe miały nieregularne odstępy czasowe)
     fs = 50
-    time = np.arange(np.amin(data["time"]), np.amax(data["time"]), 1.0 / fs)
-    z_data = np.interp(time, data["time"], data["z"])
+    time = np.arange(np.amin(data["timestamp"]), np.amax(data["timestamp"]), 1.0 / fs)
+    z_data = np.interp(time, data["timestamp"], data["accelerationZ"])
 
     # Filtrowanie pasmowoprzepustowe - Filtrujesz sygnał pasmowo w zakresie 3–11 Hz — odpowiadające częstotliwościom typowym dla aktywności człowieka. filtfilt: filtracja w przód i wstecz (brak opóźnienia fazowego). Następnie bierzesz moduł wartości (amplitudę)
     cf_low = 3
@@ -37,7 +37,7 @@ def build_activity_counts(data):
     counts[counts < 0] = 0
 
     # Tworzenie tablicy [czas, zliczenia]
-    time_counts = np.linspace(data["time"].min(), data["time"].max(), len(counts))
+    time_counts = np.linspace(data["timestamp"].min(), data["timestamp"].max(), len(counts))
 
     # activity_df = pd.DataFrame({
     #     "time": time_counts,
@@ -48,7 +48,7 @@ def build_activity_counts(data):
     interpolated_timestamps = np.arange(min(time_counts), max(time_counts), 1)
     interpolated_counts = np.interp(interpolated_timestamps, time_counts, counts)
     activity_df = pd.DataFrame({
-        "time": interpolated_timestamps,
+        "timestamp": interpolated_timestamps,
         "activity": interpolated_counts
     })
     # wartości co 1 sekundę, liczba aktywności w danej sekundzie
@@ -128,19 +128,19 @@ def cosine_proxy(time):
 
 def crop_data(motion, heart, labels):
     if labels is None:
-        start = max(motion["time"].min(), heart["time"].min())
-        end = min(motion["time"].max(), heart["time"].max())
+        start = max(motion["timestamp"].min(), heart["timestamp"].min())
+        end = min(motion["timestamp"].max(), heart["timestamp"].max())
 
-        motion_cropped = motion[(motion["time"] >= start) & (motion["time"] <= end)]
-        heart_cropped = heart[(heart["time"] >= start) & (heart["time"] <= end)]
+        motion_cropped = motion[(motion["timestamp"] >= start) & (motion["timestamp"] <= end)]
+        heart_cropped = heart[(heart["timestamp"] >= start) & (heart["timestamp"] <= end)]
         return motion_cropped, heart_cropped
 
-    start = max(motion["time"].min(), heart["time"].min(), labels["time"].min())
-    end = min(motion["time"].max(), heart["time"].max(), labels["time"].max())
+    start = max(motion["timestamp"].min(), heart["timestamp"].min(), labels["timestamp"].min())
+    end = min(motion["timestamp"].max(), heart["timestamp"].max(), labels["timestamp"].max())
 
-    motion_cropped = motion[(motion["time"] >= start) & (motion["time"] <= end)]
-    heart_cropped = heart[(heart["time"] >= start) & (heart["time"] <= end)]
-    labels_cropped = labels[(labels["time"] >= start) & (labels["time"] <= end)]
+    motion_cropped = motion[(motion["timestamp"] >= start) & (motion["timestamp"] <= end)]
+    heart_cropped = heart[(heart["timestamp"] >= start) & (heart["timestamp"] <= end)]
+    labels_cropped = labels[(labels["timestamp"] >= start) & (labels["timestamp"] <= end)]
 
     return motion_cropped, heart_cropped, labels_cropped
 
@@ -151,15 +151,15 @@ def get_window(data, feature, epoch):
     end_time = epoch + 30 + window_size
 
     return data[
-        (data["time"] > start_time) &
-        (data["time"] < end_time)
+        (data["timestamp"] > start_time) &
+        (data["timestamp"] < end_time)
         ][feature].values
 
 
 def build_heart_rate(heart_df):
     window_size = 10 * 30 - 15
-    timestamps = heart_df["time"]
-    heart_rate_values = heart_df["heart_rate"]
+    timestamps = heart_df["timestamp"]
+    heart_rate_values = heart_df["heartRateValue"]
 
     interpolated_timestamps = np.arange(min(timestamps), max(timestamps), 1)
     interpolated_hr = np.interp(interpolated_timestamps, timestamps, heart_rate_values)
@@ -168,6 +168,6 @@ def build_heart_rate(heart_df):
     scalar = np.percentile(np.abs(interpolated_hr), 90)
 
     return pd.DataFrame({
-        "time": interpolated_timestamps,
+        "timestamp": interpolated_timestamps,
         "heart_rate": interpolated_hr / scalar
     })
