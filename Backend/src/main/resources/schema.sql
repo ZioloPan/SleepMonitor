@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS acceleration (
 CREATE TABLE IF NOT EXISTS sleep_stage (
                                             id SERIAL PRIMARY KEY,
                                             timestamp INTEGER NOT NULL,
-                                            stage INTEGER NOT NULL
+                                            stage VARCHAR(45) NOT NULL
 );

@@ -9,7 +9,7 @@ import pl.agh.backend.sleep_stage.model.SleepStage;
 public class SleepStageDto {
     private int id;
     private int timestamp;
-    private int stage;
+    private String stage;
 
     public static SleepStageDto fromEntity(SleepStage sleepStage) {
         return SleepStageDto.builder()
