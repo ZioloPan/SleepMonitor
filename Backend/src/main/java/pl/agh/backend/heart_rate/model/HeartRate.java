@@ -24,4 +24,5 @@ public class HeartRate {
 
     private int timestamp;
     private double heartRateValue;
+    private int nightId;
 }

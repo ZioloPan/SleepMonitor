@@ -32,4 +32,6 @@ public class Acceleration {
 
     @Column(name = "acceleration_z")
     private double accelerationZ;
+
+    private int nightId;
 }
