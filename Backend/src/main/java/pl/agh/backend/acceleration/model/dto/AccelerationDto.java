@@ -12,10 +12,12 @@ public class AccelerationDto {
     private double accelerationX;
     private double accelerationY;
     private double accelerationZ;
+    private int nightId;
 
     public static AccelerationDto fromEntity(Acceleration acceleration) {
         return AccelerationDto.builder()
                 .id(acceleration.getId())
+                .nightId(acceleration.getNightId())
                 .timestamp(acceleration.getTimestamp())
                 .accelerationX(acceleration.getAccelerationX())
                 .accelerationY(acceleration.getAccelerationY())

@@ -23,4 +23,5 @@ public class SleepStage {
 
     private int timestamp;
     private String stage;
+    private int nightId;
 }

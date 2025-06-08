@@ -83,6 +83,7 @@ public class SleepStageService {
         Map<String, Object> request = new HashMap<>();
         request.put("heart_rate", heartRateJson);
         request.put("acceleration", accelerationJson);
+        request.put("night_id", heartRates.getFirst().getNightId());
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Map> response = restTemplate.postForEntity("http://127.0.0.1:5000/predict", request, Map.class);

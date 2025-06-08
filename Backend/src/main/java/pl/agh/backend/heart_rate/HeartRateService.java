@@ -48,6 +48,9 @@ public class HeartRateService {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
 
+            Integer lastNightId = heartRateRepository.findMaxNightId().orElse(0);
+            int newNightId = lastNightId + 1;
+
             List<HeartRate> records = reader.lines()
                     .filter(line -> !line.isBlank())
                     .map(line -> {
@@ -55,7 +58,9 @@ public class HeartRateService {
                         CreateHeartRateCommand command = new CreateHeartRateCommand();
                         command.setTimestamp(Integer.parseInt(parts[0].trim()));
                         command.setHeartRateValue(Double.parseDouble(parts[1].trim()));
-                        return command.toEntity();
+                        HeartRate entity = command.toEntity();
+                        entity.setNightId(newNightId); // ustaw nightId
+                        return entity;
                     })
                     .toList();
 
@@ -65,4 +70,5 @@ public class HeartRateService {
             throw new RuntimeException("Failed to process uploaded file", e);
         }
     }
+
 }

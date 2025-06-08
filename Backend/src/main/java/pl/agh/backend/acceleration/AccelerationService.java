@@ -1,7 +1,9 @@
 package pl.agh.backend.acceleration;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.Host;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.agh.backend.acceleration.model.Acceleration;
@@ -49,6 +51,9 @@ public class AccelerationService {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
 
+            Integer lastNightId = accelerationRepository.findMaxNightId().orElse(0);
+            int newNightId = lastNightId + 1;
+
             List<Acceleration> records = reader.lines()
                     .filter(line -> !line.isBlank())
                     .map(line -> {
@@ -58,7 +63,9 @@ public class AccelerationService {
                         command.setAccelerationX(Double.parseDouble(parts[1].trim()));
                         command.setAccelerationY(Double.parseDouble(parts[2].trim()));
                         command.setAccelerationZ(Double.parseDouble(parts[3].trim()));
-                        return command.toEntity();
+                        Acceleration entity = command.toEntity();
+                        entity.setNightId(newNightId); // ustaw nightId
+                        return entity;
                     })
                     .toList();
 
