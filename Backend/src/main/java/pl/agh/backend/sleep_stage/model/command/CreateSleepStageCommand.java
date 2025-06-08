@@ -10,8 +10,7 @@ public class CreateSleepStageCommand {
     @NotNull(message = "NULL_VALUE")
     private Integer timestamp;
 
-    @NotNull(message = "NULL_VALUE")
-    private Integer stage;
+    private String stage;
 
     public SleepStage toEntity() {
         return SleepStage.builder()

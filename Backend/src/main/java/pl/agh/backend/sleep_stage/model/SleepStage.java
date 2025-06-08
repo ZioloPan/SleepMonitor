@@ -22,5 +22,5 @@ public class SleepStage {
     private int id;
 
     private int timestamp;
-    private int stage;
+    private String stage;
 }
