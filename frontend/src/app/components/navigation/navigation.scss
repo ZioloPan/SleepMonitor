@@ -1,0 +1,27 @@
+nav {
+  background-color: #f8f9fa;
+  padding: 1rem;
+
+  ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+
+    li {
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-radius: 4px;
+
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
+}
