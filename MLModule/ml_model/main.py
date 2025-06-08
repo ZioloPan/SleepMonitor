@@ -13,11 +13,21 @@ def post_data():
     if not data:
         return jsonify({"error": "No JSON data provided"}), 400
 
+    night_id = data['night_id']
     hr = pd.DataFrame.from_records(data['heart_rate'])
     acc = pd.DataFrame.from_records(data['acceleration'])
     predictions = predict_stages(acc, hr)
     print(predictions)
-    return predictions.to_json(), 200
+
+    predictions_list = [
+        {"second_of_sleep": int(idx), "stage": stage}
+        for idx, stage in predictions.items()
+    ]
+    response = {
+        "night_id": night_id,
+        "predictions": predictions_list
+    }
+    return jsonify(response), 200
 
 
 if __name__ == '__main__':
