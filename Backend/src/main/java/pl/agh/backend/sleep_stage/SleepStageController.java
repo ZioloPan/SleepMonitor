@@ -45,9 +45,9 @@ public class SleepStageController {
         return sleepStageService.create(command);
     }
 
-    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    @PostMapping("/predict")
     @ResponseStatus(HttpStatus.CREATED)
-    public void uploadFromTxt(@RequestParam("file") MultipartFile file) {
-        sleepStageService.saveFromTxt(file);
+    public void predictSleepStages(@RequestParam int from, @RequestParam int to) {
+        sleepStageService.predictAndSaveStages(from, to);
     }
 }
