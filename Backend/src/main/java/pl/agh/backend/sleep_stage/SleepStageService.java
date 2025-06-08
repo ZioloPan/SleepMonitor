@@ -83,16 +83,23 @@ public class SleepStageService {
         Map<String, Object> request = new HashMap<>();
         request.put("heart_rate", heartRateJson);
         request.put("acceleration", accelerationJson);
-        request.put("night_id", heartRates.getFirst().getNightId());
+        request.put("night_id", heartRates.get(0).getNightId());
+
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Map> response = restTemplate.postForEntity("http://127.0.0.1:5000/predict", request, Map.class);
-        Map<String, String> predictions = response.getBody();
+        Map<String, Object> responseBody = response.getBody();
+
+
+        int nightId = (Integer) responseBody.get("night_id");
+
+        Map<String, String> predictions = (Map<String, String>) responseBody.get("predictions");
 
         List<SleepStage> predictedStages = predictions.entrySet().stream()
                 .map(e -> SleepStage.builder()
                         .timestamp(Integer.parseInt(e.getKey()))
                         .stage(e.getValue())
+                        .nightId(nightId)
                         .build())
                 .toList();
 
