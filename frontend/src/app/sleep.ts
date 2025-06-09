@@ -6,19 +6,19 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SleepService {
-  private apiUrl = '/api/v1'; // Proxy do backendu
+  private apiUrl = 'http://192.168.146.210:8080/api/v1'; // Proxy do backendu
 
   constructor(private http: HttpClient) {}
 
-  getSleepPhases(from: number, to: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/sleep_stage?from=${from}&to=${to}`);
+  getNights(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/sleep_stage/nights`);
   }
 
-  getHeartRateData(from: number, to: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/heart_rate?from=${from}&to=${to}`);
+  getSleepPhases(nightId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/sleep_stage/night/${nightId}`);
   }
 
-  getMotionData(from: number, to: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/acceleration?from=${from}&to=${to}`);
+  getHeartRateData(nightId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/heart_rate/night/${nightId}`);
   }
 }

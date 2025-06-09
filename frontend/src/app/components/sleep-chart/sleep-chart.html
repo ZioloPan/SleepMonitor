@@ -1,7 +1,28 @@
-<div class="sleep-chart">
-  <canvas baseChart
-          [data]="sleepChartData"
-          [options]="sleepChartOptions"
-          type="bar">
+<div class="date-picker">
+  <mat-form-field appearance="fill">
+    <mat-label>Select Night</mat-label>
+    <mat-select [(value)]="selectedNightId" (selectionChange)="onNightChange($event)">
+      <mat-option *ngFor="let night of nights" [value]="night.nightId">
+        {{ night.date | date: 'yyyy-MM-dd' }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div>
+  <canvas
+    baseChart
+    [data]="heartRateChartData"
+    [options]="heartRateChartOptions"
+    chartType="line">
   </canvas>
+</div>
+
+<div class="sleep-phases">
+  <h1>Sleep Phases</h1>
+  <ul>
+    <li *ngFor="let phase of sleepPhases" [ngClass]="getPhaseClass(phase.phase)">
+      {{ phase.time }} - {{ phase.phase }}
+    </li>
+  </ul>
 </div>
