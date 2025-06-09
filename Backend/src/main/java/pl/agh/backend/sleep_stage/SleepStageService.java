@@ -1,5 +1,8 @@
 package pl.agh.backend.sleep_stage;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +15,18 @@ import pl.agh.backend.heart_rate.HeartRateRepository;
 import pl.agh.backend.heart_rate.model.HeartRate;
 import pl.agh.backend.sleep_stage.model.SleepStage;
 import pl.agh.backend.sleep_stage.model.command.CreateSleepStageCommand;
+import pl.agh.backend.sleep_stage.model.dto.PredictionDto;
 import pl.agh.backend.sleep_stage.model.dto.SleepStageDto;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +60,7 @@ public class SleepStageService {
         return SleepStageDto.fromEntity(sleepStageRepository.save(sleepStage));
     }
 
-    public void predictAndSaveStages(int from, int to) {
+    public void predictAndSaveStages(int from, int to) throws IOException {
         List<HeartRate> heartRates = heartRateRepository.findAllByTimestampBetween(from, to);
         List<Acceleration> accelerations = accelerationRepository.findByTimestampBetween(from, to);
 
@@ -87,19 +93,22 @@ public class SleepStageService {
 
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Map> response = restTemplate.postForEntity("http://127.0.0.1:5000/predict", request, Map.class);
-        Map<String, Object> responseBody = response.getBody();
+        ResponseEntity<String> response = restTemplate.postForEntity("http://127.0.0.1:5000/predict", request, String.class);
 
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(response.getBody());
 
-        int nightId = (Integer) responseBody.get("night_id");
+        JsonNode predictionsNode = root.get("predictions");
+        List<PredictionDto> predictions = mapper.readValue(
+                predictionsNode.traverse(),
+                new TypeReference<List<PredictionDto>>() {}
+        );
 
-        Map<String, String> predictions = (Map<String, String>) responseBody.get("predictions");
-
-        List<SleepStage> predictedStages = predictions.entrySet().stream()
-                .map(e -> SleepStage.builder()
-                        .timestamp(Integer.parseInt(e.getKey()))
-                        .stage(e.getValue())
-                        .nightId(nightId)
+        List<SleepStage> predictedStages = predictions.stream()
+                .map(p -> SleepStage.builder()
+                        .timestamp(p.getSecond_of_sleep())
+                        .stage(p.getStage())
+                        .nightId(p.getNight_id())
                         .build())
                 .toList();
 
