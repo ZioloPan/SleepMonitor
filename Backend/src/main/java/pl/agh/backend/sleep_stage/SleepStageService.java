@@ -1,6 +1,6 @@
 package pl.agh.backend.sleep_stage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 import pl.agh.backend.acceleration.AccelerationRepository;
 import pl.agh.backend.acceleration.model.Acceleration;
 import pl.agh.backend.heart_rate.HeartRateRepository;
@@ -18,15 +17,11 @@ import pl.agh.backend.sleep_stage.model.command.CreateSleepStageCommand;
 import pl.agh.backend.sleep_stage.model.dto.PredictionDto;
 import pl.agh.backend.sleep_stage.model.dto.SleepStageDto;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 @Service
 @RequiredArgsConstructor
@@ -60,9 +55,9 @@ public class SleepStageService {
         return SleepStageDto.fromEntity(sleepStageRepository.save(sleepStage));
     }
 
-    public void predictAndSaveStages(int from, int to) throws IOException {
-        List<HeartRate> heartRates = heartRateRepository.findAllByTimestampBetween(from, to);
-        List<Acceleration> accelerations = accelerationRepository.findByTimestampBetween(from, to);
+    public void predictAndSaveStages(int night_id) throws IOException {
+        List<HeartRate> heartRates = heartRateRepository.findAllByNightId(night_id);
+        List<Acceleration> accelerations = accelerationRepository.findAllByNightId(night_id);
 
         List<Map<String, Object>> heartRateJson = heartRates.stream()
                 .map(hr -> {

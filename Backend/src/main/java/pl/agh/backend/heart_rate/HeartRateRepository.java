@@ -11,4 +11,6 @@ public interface HeartRateRepository extends JpaRepository<HeartRate, Integer> {
     List<HeartRate> findAllByTimestampBetween(int from, int to);
     @Query("SELECT MAX(h.nightId) FROM HeartRate h")
     Optional<Integer> findMaxNightId();
+
+    List<HeartRate> findAllByNightId(int nightId);
 }

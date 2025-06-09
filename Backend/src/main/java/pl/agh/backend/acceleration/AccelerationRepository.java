@@ -12,4 +12,5 @@ public interface AccelerationRepository extends JpaRepository<Acceleration, Inte
     @Query("SELECT MAX(a.nightId) FROM Acceleration a")
     Optional<Integer> findMaxNightId();
 
+    List<Acceleration> findAllByNightId(int nightId);
 }
