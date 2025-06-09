@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import pl.agh.backend.sleep_stage.model.command.CreateSleepStageCommand;
+import pl.agh.backend.sleep_stage.model.dto.NightSummaryDto;
 import pl.agh.backend.sleep_stage.model.dto.SleepStageDto;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.List;
 public class SleepStageController {
 
     private final SleepStageService sleepStageService;
+    private final SleepStageRepository sleepStageRepository;
 
     @GetMapping
     public List<SleepStageDto> getAll() {
@@ -27,9 +29,9 @@ public class SleepStageController {
         return sleepStageService.getById(id);
     }
 
-    @GetMapping(params = {"from", "to"})
-    public List<SleepStageDto> getByTimestampRange(@RequestParam int from, @RequestParam int to) {
-        return sleepStageService.getByTimestampRange(from, to);
+    @GetMapping("/night/{id}")
+    public List<SleepStageDto> getByTimestampRange(@PathVariable int id) {
+        return sleepStageService.getByTimestampRange(id);
     }
 
     @PostMapping
@@ -42,5 +44,10 @@ public class SleepStageController {
     @ResponseStatus(HttpStatus.CREATED)
     public void predictSleepStages(@PathVariable int night_id) throws IOException {
         sleepStageService.predictAndSaveStages(night_id);
+    }
+
+    @GetMapping("/nights")
+    public List<NightSummaryDto> getNightSummaries() {
+        return sleepStageService.getNightSummaries();
     }
 }

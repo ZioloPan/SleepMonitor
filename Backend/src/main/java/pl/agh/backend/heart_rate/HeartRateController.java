@@ -34,9 +34,9 @@ public class HeartRateController {
         return heartRateService.getById(id);
     }
 
-    @GetMapping(params = {"from", "to"})
-    public List<HeartRateDto> getByTimestampRange(@RequestParam int from, @RequestParam int to) {
-        return heartRateService.getByTimestampRange(from, to);
+    @GetMapping("/night/{night_id}")
+    public List<HeartRateDto> getByTimestampRange(@PathVariable int night_id) {
+        return heartRateService.getByTimestampRange(night_id);
     }
 
     @PostMapping

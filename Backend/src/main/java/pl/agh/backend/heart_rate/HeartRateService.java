@@ -33,8 +33,8 @@ public class HeartRateService {
                         .format("HeartRate with id = {0} not found", id)));
     }
 
-    public List<HeartRateDto> getByTimestampRange(int from, int to) {
-        return heartRateRepository.findAllByTimestampBetween(from, to).stream()
+    public List<HeartRateDto> getByTimestampRange(int night_id) {
+        return heartRateRepository.findAllByNightId(night_id).stream()
                 .map(HeartRateDto::fromEntity)
                 .toList();
     }

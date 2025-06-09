@@ -14,14 +14,20 @@ import pl.agh.backend.heart_rate.HeartRateRepository;
 import pl.agh.backend.heart_rate.model.HeartRate;
 import pl.agh.backend.sleep_stage.model.SleepStage;
 import pl.agh.backend.sleep_stage.model.command.CreateSleepStageCommand;
+import pl.agh.backend.sleep_stage.model.dto.NightSummaryDto;
 import pl.agh.backend.sleep_stage.model.dto.PredictionDto;
 import pl.agh.backend.sleep_stage.model.dto.SleepStageDto;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,10 +50,16 @@ public class SleepStageService {
                         .format("HeartRate with id = {0} not found", id)));
     }
 
-    public List<SleepStageDto> getByTimestampRange(int from, int to) {
-        return sleepStageRepository.findAllByTimestampBetween(from, to).stream()
+    public List<SleepStageDto> getByTimestampRange(int night_id) {
+        List<SleepStageDto> stages = sleepStageRepository.findAllByNightId(night_id).stream()
                 .map(SleepStageDto::fromEntity)
                 .toList();
+
+        List<SleepStageDto> every30thElement = new ArrayList<>();
+        for (int i = 0; i < stages.size(); i += 30) {
+            every30thElement.add(stages.get(i));
+        }
+        return every30thElement;
     }
 
     public SleepStageDto create(CreateSleepStageCommand command) {
@@ -108,5 +120,20 @@ public class SleepStageService {
                 .toList();
 
         sleepStageRepository.saveAll(predictedStages);
+    }
+
+    public List<NightSummaryDto> getNightSummaries() {
+        return sleepStageRepository.findAllByOrderByNightIdAscTimestampAsc().stream()
+                .collect(Collectors.groupingBy(SleepStage::getNightId, HashMap::new, Collectors.toList()))
+                .entrySet().stream()
+                .map(entry -> {
+                    int nightId = entry.getKey();
+                    int firstTimestamp = entry.getValue().get(0).getTimestamp();
+                    LocalDateTime dateTime = Instant.ofEpochSecond(firstTimestamp)
+                            .atZone(ZoneId.of("Europe/Warsaw"))
+                            .toLocalDateTime();
+                    return new NightSummaryDto(nightId, dateTime);
+                })
+                .toList();
     }
 }

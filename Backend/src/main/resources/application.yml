@@ -21,3 +21,6 @@ spring:
 logging:
   level:
     org.springframework.jdbc.datasource.init: DEBUG
+
+server:
+  address: 0.0.0.0
